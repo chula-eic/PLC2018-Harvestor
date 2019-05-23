@@ -4,14 +4,12 @@ int servoPort = 3;
 int angle = 0;
 
 void setup() {
-  // put your setup code here, to run once:
   Serial.begin(115200);
   grip.attach(servoPort);
   Serial.println("Started");
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
   if(Serial.available() > 0){
     int cmd = Serial.readStringUntil('\n').toInt();
     Serial.println(int(cmd));
@@ -19,5 +17,6 @@ void loop() {
   }
 }
 
-//BW black-gnd white-3.7V 2A
-//BWG black-gnd white-5Varduino green-data@servoPort
+//B-W   black-gnd white-3.7V 2A
+//B-W-G black-gnd white-5V arduino  green-data@servoPort
+//The servo response only over/under a threshold, 0 to grip and 180 to release seems to work
