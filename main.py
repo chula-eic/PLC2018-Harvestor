@@ -1,6 +1,7 @@
 ## main.py version 0.1.3
 
 import logging
+import sys, getopt
 
 import arm
 import modbus
@@ -23,7 +24,7 @@ pixel_per_pulse = 10
 
 def error_mango_not_found():
 
-    logging.debug('ERROR 0x00: MANGOS NOT FOUND')
+    logging.warning('MANGOS NOT FOUND')
 
 def pixel_to_pulse(pixel):
     return pixel / pixel_per_pulse
@@ -43,7 +44,7 @@ def find_mangos(mangos, x_camera, y_camera):
 
 def scan():
 
-    logging.debug("scan for mangos")
+    logging.info("SCAN FOR MANGOS")
     mangos = set()
 
     reset_xy()
@@ -82,19 +83,19 @@ def scan():
 
 def reset_xy():
 
-    logging.debug('Rreset X, Y')
+    logging.info('RESET X, Y')
     modbus.reset_xy()
 
 def wait_for_ready():
 
-    logging.debug('wait for PLC to be ready')
+    logging.info('WAIT FOR PLC TO BE READY')
     while modbus.is_busy() != True:
         pass
 
 def go_to(x, y):
 
     wait_for_ready()
-    logging.debug("go to " + str([x, y]))
+    logging.info("GO TO " + str([x, y]))
     modbus.drive(x, y)
 
 def grab():
@@ -103,7 +104,7 @@ def grab():
 def collect(basket, c):
 
     wait_for_ready()
-    logging.debug("collect " + str(c))
+    logging.info("COLLECT " + str(c))
     x = 0; y = 0
 
     if c == vision.yellow:
@@ -117,15 +118,39 @@ def collect(basket, c):
     basket[c] += 1
 
 def display_result(basket):
-    logging.debug("result : color( " + str(vision.yellow)+ " )" + str(basket[vision.yellow]))
-    logging.debug("result : color( " + str(vision.brown)+ " )" + str(basket[vision.brown]))
+
+    logging.info("RESULT : COLOR( " + str(vision.yellow)+ " )" + str(basket[vision.yellow]))
+    logging.info("RESULT : COLOR( " + str(vision.brown)+ " )" + str(basket[vision.brown]))
+
+def set_logging_level():
+
+    argv = sys.argv[1:]
+    level = ""
+    try:
+      opts, args = getopt.getopt(argv,"hi:o:",["logging="])
+    except getopt.GetoptError:
+        print('main.py -i <logging level>')
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt == '-h':
+            print('main.py -i <level>')
+            sys.exit()
+        elif opt in ("-i", "--logging"):
+            level = arg
+    try:
+        logging.basicConfig(level=eval("logging." + level))
+    except:
+        logging.basicConfig(level=logging.WARNING)
+
 
 if __name__ == '__main__':
 
-    logging.debug("start havesting")
+    set_logging_level()
+
+    logging.info("START HAVESTING")
     mangos, n_mango = scan()
 
-    logging.debug("reset basket")
+    logging.info("RESET BASKET")
     basket[vision.yellow] = 0
     basket[vision.brown] = 0
 
@@ -135,13 +160,13 @@ if __name__ == '__main__':
             x, y = mango[0:2]
             c = mango[2]
 
-            logging.debug("to collect mango ( " + str(c) +") at" + str([x, y]))
+            logging.info("TO COLLECT MANGO ( " + str(c) +") at" + str([x, y]))
 
             go_to(x, y)
             grab()
             collect(basket, c)
             reset_xy()
-        logging.debug("finish havesting")
+        logging.info("FINISH HAVESTING")
         display_result(basket)
     else:
         pass
