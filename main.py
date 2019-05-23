@@ -1,4 +1,4 @@
-## main.py version 0.1.2
+## main.py version 0.1.3
 
 import logging
 
@@ -28,7 +28,20 @@ def error_mango_not_found():
 def pixel_to_pulse(pixel):
     return pixel / pixel_per_pulse
 
-def find_mango():
+def find_mangos(mangos, x_camera, y_camera):
+
+    go_to(x_camera, y_camera)
+    rel_mangos = vision.find_mangos()
+
+    for rel_mango in rel_mangos:
+
+        x_rel = pixel_to_pulse(rel_mango[0])
+        y_rel = pixel_to_pulse(rel_mango[1])
+        c = rel_mango[2]
+        mango = [x_camera + x_rel, y_camera + y_rel, c]
+        mangos.add(mango)
+
+def scan():
 
     logging.debug("scan for mangos")
     mangos = set()
@@ -36,22 +49,29 @@ def find_mango():
     reset_xy()
     x_camera = min_pulse_x
     y_camera = min_pulse_y
+    dx = 1
+    dy = 1
 
-    while (x_camera <= max_pulse_x) and (y_camera <= max_pulse_y):
+    while (x_camera <= max_pulse_x) or (y_camera <= max_pulse_y):
 
-        go_to(x_camera, y_camera)
-        rel_mangos = vision.find_mangos()
-
-        for rel_mango in rel_mangos:
-
-            x_rel = pixel_to_pulse(rel_mango[0])
-            y_rel = pixel_to_pulse(rel_mango[1])
-            c = rel_mango[2]
-            mango = [x_camera + x_rel, y_camera + y_rel, c]
-            mangos.add(mango)
+        find_mangos(mangos, x_camera, y_camera)
         
-        x_camera += pulse_step_x
-        y_camera += pulse_step_y
+        if x_camera >= max_pulse_x:
+            dx =-1
+        elif x_camera <= min_pulse_x:
+            dx = 1
+        else:
+            dx = dx
+
+        if y_camera >= max_pulse_y:
+            dy =-1
+        elif y_camera <= min_pulse_y:
+            dy = 1
+        else:
+            dy = dy
+
+        x_camera += pulse_step_x*dx
+        y_camera += pulse_step_y*dy
 
     if len(mangos) <= 0: 
         error_mango_not_found()
@@ -103,7 +123,7 @@ def display_result(basket):
 if __name__ == '__main__':
 
     logging.debug("start havesting")
-    mangos, n_mango = find_mango()
+    mangos, n_mango = scan()
 
     logging.debug("reset basket")
     basket[vision.yellow] = 0
