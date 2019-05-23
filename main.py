@@ -1,7 +1,9 @@
+## main.py version 0.1.2
+
 import logging
 
-import modbus
 import arm
+import modbus
 import vision
 
 basket = {}
@@ -10,13 +12,46 @@ y_yellow = 0
 x_brown = 0
 y_brown = 0
 
+min_pulse_x = 0
+max_pulse_x = 10000
+min_pulse_y = 0
+max_pulse_y = 10000
+pulse_step_x = 500
+pulse_step_y = 200
+
+pixel_per_pulse = 10
+
 def error_mango_not_found():
 
     logging.debug('ERROR 0x00: MANGOS NOT FOUND')
 
+def pixel_to_pulse(pixel):
+    return pixel / pixel_per_pulse
+
 def find_mango():
 
-    mangos = vision.find_mangos()
+    logging.debug("scan for mangos")
+    mangos = set()
+
+    reset_xy()
+    x_camera = min_pulse_x
+    y_camera = min_pulse_y
+
+    while (x_camera <= max_pulse_x) and (y_camera <= max_pulse_y):
+
+        go_to(x_camera, y_camera)
+        rel_mangos = vision.find_mangos()
+
+        for rel_mango in rel_mangos:
+
+            x_rel = pixel_to_pulse(rel_mango[0])
+            y_rel = pixel_to_pulse(rel_mango[1])
+            c = rel_mango[2]
+            mango = [x_camera + x_rel, y_camera + y_rel, c]
+            mangos.add(mango)
+        
+        x_camera += pulse_step_x
+        y_camera += pulse_step_y
 
     if len(mangos) <= 0: 
         error_mango_not_found()
@@ -47,7 +82,7 @@ def grab():
 
 def collect(basket, c):
 
-
+    wait_for_ready()
     logging.debug("collect " + str(c))
     x = 0; y = 0
 
@@ -76,9 +111,9 @@ if __name__ == '__main__':
 
     reset_xy()
     if n_mango > 0:
-        for i in range(0, n_mango):
-            x, y = mangos[i][0:2]
-            c = mangos[i][2]
+        for mango in mangos:
+            x, y = mango[0:2]
+            c = mango[2]
 
             logging.debug("to collect mango ( " + str(c) +") at" + str([x, y]))
 
