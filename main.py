@@ -1,30 +1,48 @@
 ## main.py version 0.1.4
 
 import logging
-import sys, getopt
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import axes3d, Axes3D
+import numpy as np
 
-import arm
-import modbus
-import vision
+test = True
+
+if test:
+    import test_arm as arm
+    import test_modbus as modbus
+    import test_vision as vision
+else:
+    import arm
+    import modbus
+    import vision
 
 basket = {}
-x_yellow = 0
+x_yellow = 1000
 y_yellow = 0
-x_brown = 0
+x_brown = 2000
 y_brown = 0
 
-min_pulse_x = 0
-max_pulse_x = 10000
-min_pulse_y = 0
-max_pulse_y = 10000
-pulse_step_x = 500
-pulse_step_y = 200
+travel_x = [0]
+travel_y = [0]
+
+grab_x = []
+grab_y = []
+
+x_min= 0
+x_max = 10000
+y_min = 0
+y_max = 10000
+x_interval = 1000
+y_interval = 1000
 
 pixel_per_pulse = 10
 
+def test_print(msg):
+    if test: print(msg)
+
 def error_mango_not_found():
 
-    logging.warning('MANGOS NOT FOUND')
+    test_print('MANGOS NOT FOUND')
 
 def pixel_to_pulse(pixel):
     return pixel / pixel_per_pulse
@@ -39,40 +57,40 @@ def find_mangos(mangos, x_camera, y_camera):
         x_rel = pixel_to_pulse(rel_mango[0])
         y_rel = pixel_to_pulse(rel_mango[1])
         c = rel_mango[2]
-        mango = [x_camera + x_rel, y_camera + y_rel, c]
+        mango = (x_camera + x_rel, y_camera + y_rel, c)
+        test_print("FIND MANGO AT " + str(mango[0]) + " , " + str(mango[1]) + " WITH COLOR " + str(c))
         mangos.add(mango)
 
 def scan():
 
-    logging.info("SCAN FOR MANGOS")
+    test_print("SCAN FOR MANGOS")
     mangos = set()
 
-    reset_xy()
-    x_camera = min_pulse_x
-    y_camera = min_pulse_y
-    dx = 1
-    dy = 1
+    reset()
+    x_camera = x_min
+    dir_x = 1
+    loop_end = False
 
-    while (x_camera <= max_pulse_x) or (y_camera <= max_pulse_y):
+    for y_camera in range(y_min, y_max + y_interval, y_interval):
 
-        find_mangos(mangos, x_camera, y_camera)
-        
-        if x_camera >= max_pulse_x:
-            dx =-1
-        elif x_camera <= min_pulse_x:
-            dx = 1
-        else:
-            dx = dx
+        if y_camera >= y_max: 
+            y_camera = y_max
+            loop_end = True
+        while True:
+            find_mangos(mangos, x_camera, y_camera)
+            if x_camera + x_interval*dir_x < x_min:
+                dir_x = 1
+                test_print("CHANGE DIRECTION X TO " + str(dir_x))
+                break
+            elif x_camera + x_interval*dir_x > x_max:
+                dir_x = -1
+                test_print("CHANGE DIRECTION X TO " + str(dir_x))
+                break
+            else:
+                x_camera += x_interval*dir_x
 
-        if y_camera >= max_pulse_y:
-            dy =-1
-        elif y_camera <= min_pulse_y:
-            dy = 1
-        else:
-            dy = dy
+        if loop_end: break
 
-        x_camera += pulse_step_x*dx
-        y_camera += pulse_step_y*dy
 
     if len(mangos) <= 0: 
         error_mango_not_found()
@@ -81,21 +99,23 @@ def scan():
 
     return (mangos, len(mangos))
 
-def reset_xy():
+def reset():
 
-    logging.info('RESET X, Y')
-    modbus.reset_xy()
+    test_print('RESET X, Y')
+    travel_x.append(0)
+    travel_y.append(0)
+    modbus.reset()
 
 def wait_for_ready():
 
-    logging.info('WAIT FOR PLC TO BE READY')
-    while modbus.is_busy() != True:
+    test_print('WAIT FOR PLC TO BE READY')
+    while modbus.is_busy():
         pass
 
 def go_to(x, y):
 
     wait_for_ready()
-    logging.info("GO TO " + str([x, y]))
+    test_print("GO TO " + str([x, y]))
     modbus.drive(x, y)
 
 def grab():
@@ -104,7 +124,7 @@ def grab():
 def collect(basket, c):
 
     wait_for_ready()
-    logging.info("COLLECT " + str(c))
+    test_print("COLLECT " + str(c))
     x = 0; y = 0
 
     if c == vision.yellow:
@@ -115,58 +135,62 @@ def collect(basket, c):
         y = y_brown
     
     go_to(x, y)
+    travel_x.append(x)
+    travel_y.append(y)
     basket[c] += 1
 
 def display_result(basket):
 
-    logging.info("RESULT : COLOR( " + str(vision.yellow)+ " )" + str(basket[vision.yellow]))
-    logging.info("RESULT : COLOR( " + str(vision.brown)+ " )" + str(basket[vision.brown]))
-
-def set_logging_level():
-
-    argv = sys.argv[1:]
-    level = ""
-    try:
-      opts, args = getopt.getopt(argv,"hi:o:",["logging="])
-    except getopt.GetoptError:
-        print('main.py -i <logging level>')
-        sys.exit(2)
-    for opt, arg in opts:
-        if opt == '-h':
-            print('main.py -i <level>')
-            sys.exit()
-        elif opt in ("-i", "--logging"):
-            level = arg
-    try:
-        logging.basicConfig(level=eval("logging." + level))
-    except:
-        logging.basicConfig(level=logging.WARNING)
+    test_print("RESULT : COLOR( " + str(vision.yellow)+ " )" + str(basket[vision.yellow]))
+    test_print("RESULT : COLOR( " + str(vision.brown)+ " )" + str(basket[vision.brown]))
 
 
 if __name__ == '__main__':
 
-    set_logging_level()
+    is_debugging = True or test
 
-    logging.info("START HAVESTING")
+    if is_debugging:
+        logging.basicConfig(level=test_print)
+    else:
+        logging.basicConfig(level=test_print)
+
+    test_print("SET DEBUGGING = %s" + str(is_debugging))
+
+    if test: test_print("START TESTING")
+    test_print("START HAVESTING")
     mangos, n_mango = scan()
 
-    logging.info("RESET BASKET")
+    test_print("RESET BASKET")
     basket[vision.yellow] = 0
     basket[vision.brown] = 0
 
-    reset_xy()
+    reset()
     if n_mango > 0:
+        X = []
+        Y = []
+        C = []
         for mango in mangos:
             x, y = mango[0:2]
             c = mango[2]
+            X.append(x)
+            Y.append(y)
+            C.append('y' if c == vision.yellow else 'r')
 
-            logging.info("TO COLLECT MANGO ( " + str(c) +") at" + str([x, y]))
+            test_print("TO COLLECT MANGO ( " + str(c) +") at" + str([x, y]))
 
             go_to(x, y)
+            travel_x.append(x)
+            travel_y.append(y)
             grab()
+            grab_x.append(x)
+            grab_y.append(y)
             collect(basket, c)
-            reset_xy()
-        logging.info("FINISH HAVESTING")
+            reset()
+        test_print("FINISH HAVESTING")
         display_result(basket)
+        if test:
+            plt.scatter(X, Y, c=C)
+            plt.plot(travel_x, travel_y, alpha=0.5)
+            plt.show()
     else:
         pass
