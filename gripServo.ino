@@ -2,18 +2,40 @@
 Servo grip;
 int servoPort = 3;
 int angle = 0;
+String cmd = "";
 
 void setup() {
   Serial.begin(115200);
   grip.attach(servoPort);
-  Serial.println("Started");
+  Serial.println("SETUP DONE");
 }
-
+void doServoAction(String cmd){
+  if(cmd.compareTo("RELEASE")){
+    Serial.println("RELEASING...");
+    grip.write(180);
+    Serial.println("DONE");
+  }
+  else if(cmd.compareTo("CUT")){
+    Serial.println("CUTTING...")
+    grip.write(0);
+    Serial.println("DONE");
+  }
+  else{
+    Serial.println("INPUT NOT RECOGNIZED: " + cmd + ". PLEASE TRY AGAIN");
+  }
+}
+String readSerial(){
+    String s = "";
+    while(Serial.available()){
+      s += (char)Serial.read();
+    }
+    return s;
+}
 void loop() {
-  if(Serial.available() > 0){
-    int cmd = Serial.readStringUntil('\n').toInt();
-    Serial.println(int(cmd));
-    grip.write(int(cmd));
+  if(Serial.available()){
+    cmd = readSerial();
+    Serial.println("SERIAL INPUT RECIEVED: " + cmd);
+    doServoaction(cmd);
   }
 }
 

@@ -1,44 +1,46 @@
-import subprocess as subp
+import subprocess
 from subprocess import Popen
 import os, sys, time
+import config
+
+'change working dir to darknet to prepare to launch'
 os.chdir(
     "../darknet"
 )
 cmd = './darknet detector demo cfg/coco.data cfg/yolov3.cfg yolov3.weights'
 #cmd = 'ls'
-p = None
+config.process =   None
 def status():
-    global p
-    if p == None: 
+    
+    if config.process == None:
         return False
     if p.poll() == None:
         return True
     return False
 def read_stdout():
-    global p
-    if(p == None):
+    
+    if config.process == None:
         return None
-    return p.stdout.read(100000).decode('utf-8')
+    return process.stdout.read(100000).decode('utf-8')
 def start():
-    global p
+    
     if status() == True:
         return
-    p = subp.Popen(cmd, shell=True, stderr=subp.STDOUT,stdout=subp.PIPE)
+    config.process = subprocess.Popen(cmd, shell=True, stderr=subprocess.STDOUT,stdout=subprocess.PIPE)
 def find_mangos():
-    global p
+    
     if status() == False:
         return
     out = read_stdout()
     return out
 def terminate_process():
-    global p
+    
     if(status() == True):
-        p.terminate()
+        process.terminate()
         return True
     return False
 def clear_buffer():
-    global p
-    p.stdout.flush()
+    config.process.stdout.flush()
 #test
 if __name__ == '__main__':
     start()
