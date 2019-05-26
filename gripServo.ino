@@ -11,12 +11,12 @@ void setup() {
 }
 void doServoAction(String cmd){
   if(cmd.compareTo("RELEASE")){
-    Serial.println("RELEASING...");
+    Serial.println("RELEASING");
     grip.write(180);
     Serial.println("DONE");
   }
   else if(cmd.compareTo("CUT")){
-    Serial.println("CUTTING...")
+    Serial.println("CUTTING")
     grip.write(0);
     Serial.println("DONE");
   }
