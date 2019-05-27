@@ -14,14 +14,14 @@ def status():
     
     if config.process == None:
         return False
-    if p.poll() == None:
+    if config.process.poll() == None:
         return True
     return False
 def read_stdout():
     
     if config.process == None:
         return None
-    return process.stdout.read(100000).decode('utf-8')
+    return config.process.stdout.read(100000).decode('utf-8')
 def start():
     
     if status() == True:
