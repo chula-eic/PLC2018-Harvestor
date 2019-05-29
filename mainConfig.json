@@ -14,5 +14,6 @@
     "y_min": 0,
     "y_max": 10000,
     "y_interval": 1000,
-    "y_error": 100
+    "y_error": 100,
+    "xptmm": 0.736
 }
