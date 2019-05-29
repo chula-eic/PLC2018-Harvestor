@@ -1,9 +1,8 @@
-## main.py version 0.1.4
+## main.py version 0.2.0
 
 import logging
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import axes3d, Axes3D
 import numpy as np
+import json
 
 test = True
 
@@ -16,181 +15,115 @@ else:
     import modbus
     import vision
 
+
+print("CONFIGUE")
 basket = {}
-x_yellow = 1000
-y_yellow = 0
-x_brown = 2000
-y_brown = 0
 
-travel_x = [0]
-travel_y = [0]
+with open("mainConfig.json", "r") as config_file:
+    config = json.load(config_file)
+    x_yellow = config['x_yellow']
+    y_yellow = config['y_yellow']
+    x_brown = config['x_brown']
+    y_brown = config['y_brown']
+    x_min = config['x_min']
+    x_max = config['x_max']
+    x_interval = config['x_interval']
+    x_error = config['x_error']
+    y_min = config['y_min']
+    y_max = config['y_max']
+    y_interval = config['y_interval']
+    y_error = config['y_error']
 
-grab_x = []
-grab_y = []
+print("RESET POSITION TO 0, 0, 0")
+modbus.reset()
 
-x_min= 0
-x_max = 10000
-y_min = 0
-y_max = 10000
-x_interval = 1000
-y_interval = 1000
+print("HARVEST")
 
-pixel_per_pulse = 10
+x_camera = x_min
+dir_x = 1
+loop_end = False
 
-def test_print(msg):
-    if test: print(msg)
+for y_camera in range(y_min, y_max + y_interval, y_interval):
 
-def error_mango_not_found():
+    if y_camera >= y_max:
 
-    test_print('MANGOS NOT FOUND')
+        y_camera = y_max
+        loop_end = True
+        
+    while True:
 
-def pixel_to_pulse(pixel):
-    return pixel / pixel_per_pulse
-
-def find_mangos(mangos, x_camera, y_camera):
-
-    go_to(x_camera, y_camera)
-    rel_mangos = vision.find_mangos()
-
-    for rel_mango in rel_mangos:
-
-        x_rel = pixel_to_pulse(rel_mango[0])
-        y_rel = pixel_to_pulse(rel_mango[1])
-        c = rel_mango[2]
-        mango = (x_camera + x_rel, y_camera + y_rel, c)
-        test_print("FIND MANGO AT " + str(mango[0]) + " , " + str(mango[1]) + " WITH COLOR " + str(c))
-        mangos.add(mango)
-
-def scan():
-
-    test_print("SCAN FOR MANGOS")
-    mangos = set()
-
-    reset()
-    x_camera = x_min
-    dir_x = 1
-    loop_end = False
-
-    for y_camera in range(y_min, y_max + y_interval, y_interval):
-
-        if y_camera >= y_max: 
-            y_camera = y_max
-            loop_end = True
+        ## save x, y point
+        x_save = x_camera
+        y_save = y_camera
+        
         while True:
-            find_mangos(mangos, x_camera, y_camera)
-            if x_camera + x_interval*dir_x < x_min:
-                dir_x = 1
-                test_print("CHANGE DIRECTION X TO " + str(dir_x))
-                break
-            elif x_camera + x_interval*dir_x > x_max:
-                dir_x = -1
-                test_print("CHANGE DIRECTION X TO " + str(dir_x))
-                break
+
+            mangos = vision.find_mangos()
+            if len(mangos) > 0:
+
+                ## find nearest mango
+                nearest_mango = mangos[0]
+                nearest_distant_square = nearest_mango[0]**2 + nearest_mango[1]**2
+                for mango in mangos:
+                    distant_square = mango[0]**2 + mango[1]**2
+                    if distant_square <= nearest_distant_square:
+                        nearest_mango = mango
+                        nearest_distant_square = distant_square
+
+                x_mango = nearest_mango[0]
+                y_mango = nearest_mango[1]
+
+                print("FOUND MANGO", color, "AT", x_mango, y_mango)
+
+                if abs(x_mango) > x_error or abs(y_mango) > y_error:
+
+                    ## visual servo 
+                    x_camera += x_mango
+                    y_camera += y_mango
+                    modbus.drive(x_camera, y_camera)
+
+                else:
+
+                    color = vision.get_color()
+
+                    if color == vision.yellow:
+
+                        arm.grab()
+                        modbus.drive(x_yellow, y_yellow)
+                        arm.release()
+
+                    elif color == vision.brown:
+
+                        arm.grab()
+                        modbus.drive(x_brown, y_brown)
+                        arm.release()
+
+                    else:
+
+                        pass
+
+                    modbus.drive(x_save, y_save)
+
             else:
-                x_camera += x_interval*dir_x
 
-        if loop_end: break
+                ## mango not found
+                break
 
+        ## return to saved point
+        x_camera = x_save
+        y_camera = y_save
 
-    if len(mangos) <= 0: 
-        error_mango_not_found()
-    else: 
-        pass
+        if x_camera + x_interval*dir_x < x_min:
+            dir_x = 1
+            break
+        elif x_camera + x_interval*dir_x > x_max:
+            dir_x = -1
+            break
+        else:
+            x_camera += x_interval*dir_x
 
-    return (mangos, len(mangos))
+    if loop_end: break
 
-def reset():
+print("RESULT : COLOR( " + str(vision.yellow)+ " )" + str(basket[vision.yellow]))
+print("RESULT : COLOR( " + str(vision.brown)+ " )" + str(basket[vision.brown]))
 
-    test_print('RESET X, Y')
-    travel_x.append(0)
-    travel_y.append(0)
-    modbus.reset()
-
-def wait_for_ready():
-
-    test_print('WAIT FOR PLC TO BE READY')
-    while modbus.is_busy():
-        pass
-
-def go_to(x, y):
-
-    wait_for_ready()
-    test_print("GO TO " + str([x, y]))
-    modbus.drive(x, y)
-
-def grab():
-    arm.grab()
-
-def collect(basket, c):
-
-    wait_for_ready()
-    test_print("COLLECT " + str(c))
-    x = 0; y = 0
-
-    if c == vision.yellow:
-        x = x_yellow
-        y = y_yellow
-    elif c == vision.brown:
-        x = x_brown
-        y = y_brown
-    
-    go_to(x, y)
-    travel_x.append(x)
-    travel_y.append(y)
-    basket[c] += 1
-
-def display_result(basket):
-
-    test_print("RESULT : COLOR( " + str(vision.yellow)+ " )" + str(basket[vision.yellow]))
-    test_print("RESULT : COLOR( " + str(vision.brown)+ " )" + str(basket[vision.brown]))
-
-
-if __name__ == '__main__':
-
-    is_debugging = True or test
-
-    if is_debugging:
-        logging.basicConfig(level=test_print)
-    else:
-        logging.basicConfig(level=test_print)
-
-    test_print("SET DEBUGGING = %s" + str(is_debugging))
-
-    if test: test_print("START TESTING")
-    test_print("START HAVESTING")
-    mangos, n_mango = scan()
-
-    test_print("RESET BASKET")
-    basket[vision.yellow] = 0
-    basket[vision.brown] = 0
-
-    reset()
-    if n_mango > 0:
-        X = []
-        Y = []
-        C = []
-        for mango in mangos:
-            x, y = mango[0:2]
-            c = mango[2]
-            X.append(x)
-            Y.append(y)
-            C.append('y' if c == vision.yellow else 'r')
-
-            test_print("TO COLLECT MANGO ( " + str(c) +") at" + str([x, y]))
-
-            go_to(x, y)
-            travel_x.append(x)
-            travel_y.append(y)
-            grab()
-            grab_x.append(x)
-            grab_y.append(y)
-            collect(basket, c)
-            reset()
-        test_print("FINISH HAVESTING")
-        display_result(basket)
-        if test:
-            plt.scatter(X, Y, c=C)
-            plt.plot(travel_x, travel_y, alpha=0.5)
-            plt.show()
-    else:
-        pass
