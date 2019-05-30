@@ -1,7 +1,8 @@
 import serial
 import config.py
 from time import sleep
-config.isBusy = False
+config.x = 0
+config.y = 0
 config.PORT = 'COM5'
 ser = None
 def setup():
@@ -29,33 +30,37 @@ def serial_read(cmd=""):
             rl = rl.decode('utf-8')
         except UnicodeDecodeError:
             rl = str(rl)
-        if(rl == "DONE"):
-            print('Done')
-            setToDefault()
-            return 'SUCCESS'
-        elif(rl == "GOING FORWARD" or rl == "GOING BACKWARD" or rl == "STOPPED"):
-           print('DONE')
+        if(rl == "POSITIONING"):
+           print('POSITIONING DONE')
            return('SUCCESS')
-        elif(rl == 'RELEASING'):
-            setToReleasing()
-        elif(rl == 'CUTTING'):
-            setToCutting()
-        elif(rl == 'GRABBING'):
-            setToGrabbing()
+        elif(rl == 'RST'):
+            print("RESET")
+            return r1
         elif(rl == "SETUP DONE"):
             return rl
         elif(rl == ""):
             pass
         else:
             print('msg recieve='+rl)
-            setToDefault()
             return rl
 
-#330 mm for long_x positioning
+def get_XY():
+    return [config.x, config.y]
+
+def reset():
+    if(serial.writeTimeoutError("0") == "RST"):
+        config.x = 0
+        config.y = 0
+
+#300 mm for long_x positioning
 def long_x_positive():
     print("long_x+ positioning")
+    if config.x >= 700:
+        print("out of range long_x+")
+        return false
     if(serial_write("2") == 'SUCCESS'):
         print('long_x+ success')
+        config.x += 300
         return True
     else:
         print("long_x+ error")
@@ -63,9 +68,90 @@ def long_x_positive():
 
 def long_x_negative():
     print("long_x- positioning")
-    if(serial_write("2") == 'SUCCESS'):
+    if config.x <= 300:
+        print("out of range long_x-")
+        return false
+    if(serial_write("3") == 'SUCCESS'):
         print('long_x- success')
+        config.x -= 300
         return True
     else:
         print("long_x- error")
+        return False
+#50mm for short_x positioning
+def short_x_positive():
+    print("short_x+ positioning")
+    if config.x >= 950:
+        print("out of range short_x+")
+        return False
+    if(serial_write("4") == 'SUCCESS'):
+        print('short_x+ success')
+        config.x += 50
+        return True
+    else:
+        print("short_x+ error")
+        return False
+def short_x_negative():
+    print("short_x- positioning")
+    if config.x <= 50:
+        print("out of range short_x-")
+        return False
+    if(serial_write("5") == 'SUCCESS'):
+        print('short_x- success')
+        config.x -= 50
+        return True
+    else:
+        print("short_x- error")
+        return False
+
+#200mm for long_y positioning
+def long_y_positive():
+    print("long_y+ positioning")
+    if config.y >= 350:
+        print("out of range long_y+")
+        return False
+    if(serial_write("6") == 'SUCCESS'):
+        print('long_y+ success')
+        config.y += 200
+        return True
+    else:
+        print("long_y+ error")
+        return False
+def long_y_negative():
+    print("long_y- positioning")
+    if config.y <= 200:
+        print("out of range long_y-")
+        return False
+    if(serial_write("7") == 'SUCCESS'):
+        print('long_y- success')
+        config.y -= 200
+        return True
+    else:
+        print("long_y- error")
+        return False
+
+#50mm for short_y positioning
+def short_y_positive():
+    print("short_y+ positioning")
+    if config.y >= 500:
+        print("out of range short_y+")
+        return False
+    if(serial_write("8") == 'SUCCESS'):
+        print('short_y+ success')
+        config.y += 50
+        return True
+    else:
+        print("short_y+ error")
+        return False
+def short_y_negative():
+    print("short_y- positioning")
+    if config.y <= 50:
+        print("out of range short_y-")
+        return False
+    if(serial_write("9") == 'SUCCESS'):
+        print('short_y- success')
+        config.y -= 50
+        return True
+    else:
+        print("short_y- error")
         return False

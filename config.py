@@ -1,7 +1,6 @@
 'Configuration of global variables and settings for every file'
 
 'PLC.py'
-isBusy = False
 x = 0
 y = 0
 
