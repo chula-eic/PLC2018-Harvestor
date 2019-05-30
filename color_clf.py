@@ -1,53 +1,73 @@
 import cv2
 import glob
 import numpy as np
-from test_color import get_dominant_color
+from test_color import color_center
 
 from sklearn.linear_model import LogisticRegression as logistic
 import joblib
 
 import datetime
 
-X = []
-Y = []
 
-imgs = glob.glob("clf/mango_color/b*.png")
-for fname in imgs:
-    img = cv2.imread(fname)
-    d_color = get_dominant_color(img)
-    print(fname, d_color)
-    X.append(d_color)
-    Y.append(2)
+color_liz = ['green', 'yellow', 'brown']
 
-imgs = glob.glob("clf/mango_color/y*.png")
-for fname in imgs:
-    img = cv2.imread(fname)
-    d_color = get_dominant_color(img)
-    print(fname, d_color)
-    X.append(d_color)
-    Y.append(1)
+def learn():
 
-imgs = glob.glob("clf/mango_color/g*.png")
-for fname in imgs:
-    img = cv2.imread(fname)
-    d_color = get_dominant_color(img)
-    print(fname, d_color)
-    X.append(d_color)
-    Y.append(0)
+    X = []
+    Y = []
 
-X = np.array(X)
-Y = np.array(Y)
+    imgs = glob.glob("mango_color/b*.png")
+    for fname in imgs:
+        img = cv2.imread(fname)
+        c_color = color_center(img)
+        print(fname, c_color)
+        X.append(c_color)
+        Y.append(2)
 
-clf = logistic(solver='lbfgs', multi_class='multinomial')
-clf.fit(X, Y)
-clf_path = 'color_clf.joblib'
-joblib.dump(clf, clf_path)
-print("save classifier at", clf_path)
+    imgs = glob.glob("mango_color/y*.png")
+    for fname in imgs:
+        img = cv2.imread(fname)
+        c_color = color_center(img)
+        print(fname, c_color)
+        X.append(c_color)
+        Y.append(1)
 
-test_img = cv2.imread("mango_color/y0.png")
-test_d_color = get_dominant_color(test_img)
-pred_color = clf.predict(test_d_color)
+    imgs = glob.glob("mango_color/g*.png")
+    for fname in imgs:
+        img = cv2.imread(fname)
+        c_color = color_center(img)
+        print(fname, c_color)
+        X.append(c_color)
+        Y.append(0)
 
-cv2.imshow(test_img)
-print("predicted color of", test_d_color, "=", pred_color)
-cv2.waitKey(0)
+    X = np.array(X)
+    Y = np.array(Y)
+
+    clf = logistic(solver='lbfgs', multi_class='multinomial', max_iter=1000)
+    clf.fit(X, Y)
+
+    return clf
+
+def classify(clf, color):
+    return color_liz[clf.predict(color)[0]]
+
+def load(clf_path):
+    return joblib.load(clf_path)
+
+def save(clf_path, clf):
+    joblib.dump(clf, clf_path)
+    return
+
+if __name__ == '__main__':
+    clf = learn()
+    clf_path = 'color_clf.joblib'
+    save(clf_path, clf)
+    print("save classifier at", clf_path)
+
+    test_img = cv2.imread("mango_color/y0.png")
+    test_c_color = color_center(test_img).reshape(1, -1)
+    pred_color = color_liz[clf.predict(test_c_color)[0]]
+
+    cv2.imshow('test', test_img)
+    print("predicted color of", test_c_color, "=", pred_color)
+    cv2.waitKey(0)
