@@ -44,7 +44,7 @@ clf_path = 'color_clf.joblib'
 joblib.dump(clf, clf_path)
 print("save classifier at", clf_path)
 
-test_img = cv2.imread("clf/mango_color/y0.png")
+test_img = cv2.imread("mango_color/y0.png")
 test_d_color = get_dominant_color(test_img)
 pred_color = clf.predict(test_d_color)
 
