@@ -1,16 +1,15 @@
 import serial
-import config.py
+import config
 from time import sleep
 config.x = 0
 config.y = 0
-config.PORT = 'COM5'
+config.PORT = 'COM6'
 ser = None
 def setup():
     global ser
     ser = serial.Serial(config.PORT, 9600, timeout=1)
     st = serial_read()
-    while(not st == "SETUP DONE"):
-        st=serial_read()
+    print(st)
 def serial_write(s):
     t = s
     global ser
@@ -30,12 +29,9 @@ def serial_read(cmd=""):
             rl = rl.decode('utf-8')
         except UnicodeDecodeError:
             rl = str(rl)
-        if(rl == "POSITIONING"):
+        if(rl == "2" or rl == "3" or rl == "4" or rl == "5" or rl == "6" or rl == "7" or rl == "8" or rl == "9"):
            print('POSITIONING DONE')
            return('SUCCESS')
-        elif(rl == 'RST'):
-            print("RESET")
-            return r1
         elif(rl == "SETUP DONE"):
             return rl
         elif(rl == ""):
@@ -55,7 +51,7 @@ def reset():
 #300 mm for long_x positioning
 def long_x_positive():
     print("long_x+ positioning")
-    if config.x >= 700:
+    if config.x > 700:
         print("out of range long_x+")
         return false
     if(serial_write("2") == 'SUCCESS'):
@@ -68,9 +64,9 @@ def long_x_positive():
 
 def long_x_negative():
     print("long_x- positioning")
-    if config.x <= 300:
+    if config.x < 300:
         print("out of range long_x-")
-        return false
+        return False
     if(serial_write("3") == 'SUCCESS'):
         print('long_x- success')
         config.x -= 300
@@ -81,7 +77,7 @@ def long_x_negative():
 #50mm for short_x positioning
 def short_x_positive():
     print("short_x+ positioning")
-    if config.x >= 950:
+    if config.x > 950:
         print("out of range short_x+")
         return False
     if(serial_write("4") == 'SUCCESS'):
@@ -93,7 +89,7 @@ def short_x_positive():
         return False
 def short_x_negative():
     print("short_x- positioning")
-    if config.x <= 50:
+    if config.x < 50:
         print("out of range short_x-")
         return False
     if(serial_write("5") == 'SUCCESS'):
@@ -107,7 +103,7 @@ def short_x_negative():
 #200mm for long_y positioning
 def long_y_positive():
     print("long_y+ positioning")
-    if config.y >= 350:
+    if config.y > 350:
         print("out of range long_y+")
         return False
     if(serial_write("6") == 'SUCCESS'):
@@ -119,7 +115,7 @@ def long_y_positive():
         return False
 def long_y_negative():
     print("long_y- positioning")
-    if config.y <= 200:
+    if config.y < 200:
         print("out of range long_y-")
         return False
     if(serial_write("7") == 'SUCCESS'):
@@ -133,7 +129,7 @@ def long_y_negative():
 #50mm for short_y positioning
 def short_y_positive():
     print("short_y+ positioning")
-    if config.y >= 500:
+    if config.y > 500:
         print("out of range short_y+")
         return False
     if(serial_write("8") == 'SUCCESS'):
@@ -145,7 +141,7 @@ def short_y_positive():
         return False
 def short_y_negative():
     print("short_y- positioning")
-    if config.y <= 50:
+    if config.y < 50:
         print("out of range short_y-")
         return False
     if(serial_write("9") == 'SUCCESS'):

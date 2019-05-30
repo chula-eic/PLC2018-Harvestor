@@ -16,73 +16,83 @@ void setup() {
   digitalWrite(r2, HIGH);
   digitalWrite(r3, HIGH);
   Serial.begin(9600);
-  Serial.println("SETUP DONE");
+  Serial.print("SETUP DONE");
 }
 
 void loop() {
   if(Serial.available()){
     cmd = Serial.read();
     //if operated manually, use Serial.readStringUntil('\n') instead.
-    Serial.println("SERIAL INPUT RECIEVED: " + cmd);
     if(cmd == '0'){
       digitalWrite(r0, HIGH);
       digitalWrite(r1, HIGH);
       digitalWrite(r2, HIGH);
       digitalWrite(r3, HIGH);
-    }
-    else if(cmd == '1'){
-      digitalWrite(r0, LOW);
-      digitalWrite(r1, LOW);
-      digitalWrite(r2, LOW);
-      digitalWrite(r3, LOW);
+      Serial.print("0");
     }
     else if(cmd == '2'){
       digitalWrite(r0, HIGH);
       digitalWrite(r1, HIGH);
       digitalWrite(r2, LOW);
       digitalWrite(r3, HIGH);
+      Serial.print("2");
+      delay(2800);
     }
     else if(cmd == '3'){
       digitalWrite(r0, HIGH);
       digitalWrite(r1, HIGH);
       digitalWrite(r2, LOW);
       digitalWrite(r3, LOW);
+      Serial.print("3");
+      delay(2800);
     }
     else if(cmd == '4'){
       digitalWrite(r0, HIGH);
       digitalWrite(r1, LOW);
       digitalWrite(r2, HIGH);
       digitalWrite(r3, HIGH);
+      Serial.print("4");
+      delay(300);
     }
     else if(cmd == '5'){
       digitalWrite(r0, HIGH);
       digitalWrite(r1, LOW);
       digitalWrite(r2, HIGH);
       digitalWrite(r3, LOW);
+      Serial.print("5");
+      delay(300);
     }
     else if(cmd == '6'){
       digitalWrite(r0, HIGH);
       digitalWrite(r1, LOW);
       digitalWrite(r2, LOW);
       digitalWrite(r3, HIGH);
+      Serial.print("6");
+      delay(1800);
     }
     else if(cmd == '7'){
       digitalWrite(r0, HIGH);
       digitalWrite(r1, LOW);
       digitalWrite(r2, LOW);
       digitalWrite(r3, LOW);
+      Serial.print("7");
+      delay(1800);
     }
     else if(cmd == '8'){
       digitalWrite(r0, LOW);
       digitalWrite(r1, HIGH);
       digitalWrite(r2, HIGH);
       digitalWrite(r3, HIGH);
+      Serial.print("8");
+      delay(300);
     }
     else if(cmd == '9'){
       digitalWrite(r0, LOW);
       digitalWrite(r1, HIGH);
       digitalWrite(r2, HIGH);
       digitalWrite(r3, LOW);
+      Serial.print("9");
+      delay(300);
     }
     else{
       digitalWrite(r0, HIGH);
@@ -90,11 +100,10 @@ void loop() {
       digitalWrite(r2, HIGH);
       digitalWrite(r3, HIGH);
     }
-    delay(2500);
   }
-  delay(100);
   digitalWrite(r0, HIGH);
   digitalWrite(r1, HIGH);
   digitalWrite(r2, HIGH);
   digitalWrite(r3, HIGH);
+  delay(200);
 }
