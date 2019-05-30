@@ -49,19 +49,22 @@ def learn():
     return clf
 
 def classify(clf, color):
-    return color_liz[clf.predict(color)[0]]
+    return color_liz[clf.predict(color.reshape(1, -1))[0]]
 
-def load(clf_path):
+def load(clf_path='color_clf.joblib'):
     return joblib.load(clf_path)
 
-def save(clf_path, clf):
+def save(clf, clf_path='color_clf.joblib'):
     joblib.dump(clf, clf_path)
     return
+
+def get_color(image, clf, n=10):
+    return classify(clf, color_center(image, n))
 
 if __name__ == '__main__':
     clf = learn()
     clf_path = 'color_clf.joblib'
-    save(clf_path, clf)
+    save(clf, clf_path)
     print("save classifier at", clf_path)
 
     test_img = cv2.imread("mango_color/y0.png")
