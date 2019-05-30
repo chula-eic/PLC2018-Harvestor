@@ -4,7 +4,7 @@ import logging
 import numpy as np
 import json
 
-test = True
+test = False
 
 if test:
     import test_arm as arm
@@ -12,7 +12,7 @@ if test:
     import test_vision as vision
 else:
     import arm
-    import modbus
+    import PLC
     import vision
 
 
@@ -27,15 +27,17 @@ with open("mainConfig.json", "r") as config_file:
     y_brown = config['y_brown']
     x_min = config['x_min']
     x_max = config['x_max']
-    x_interval = config['x_interval']
+    x_long = config['x_long']
+    x_short = config['x_short']
     x_error = config['x_error']
     y_min = config['y_min']
     y_max = config['y_max']
-    y_interval = config['y_interval']
+    y_long = config['y_long']
+    y_short = config['y_short']
     y_error = config['y_error']
 
 print("RESET POSITION TO 0, 0, 0")
-modbus.reset()
+# modbus.reset()
 
 print("HARVEST")
 
