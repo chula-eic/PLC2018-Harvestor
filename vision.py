@@ -31,8 +31,14 @@ def detect(frame, net):
         cropped_image.append(framez[int(x-w/2):int(x+w/2),int(y-h/2):int(y+h/2)])
         color = tc.get_color(cropped_image[-1])
         cv2.putText(framez, str(cat.decode("utf-8")), (int(x), int(y)), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 0))
-        results.append((cat,score,color, (mul*(bounds[0]-bounds[2]/2),mul*(bounds[1]-bounds[3]/2),mul*(bounds[2]),mul*(bounds[3])))
-    cv2.imshow(framez)
+        results.append(
+            (
+                cat,score,color, (
+                    mul*(bounds[0]-bounds[2]/2),mul*(bounds[1]-bounds[3]/2),mul*(bounds[2]),mul*(bounds[3])
+                    )
+            )
+        )
+    cv2.imshow("frame", framez)
     #results = [(cat, score, (mul*(bounds[0]-bounds[2]/2),mul*(bounds[1]-bounds[3]/2),mul*(bounds[2]),mul*(bounds[3]))) for cat, score, bounds in results]
     return results
 
