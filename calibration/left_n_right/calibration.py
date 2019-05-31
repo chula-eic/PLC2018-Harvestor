@@ -11,62 +11,62 @@ criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 objp = np.zeros((7*9,3), np.float32)
 objp[:,:2] = np.mgrid[0:9,0:7].T.reshape(-1,2)
 
-# Arrays to store object points and image points from all the images.
-objpoints = [] # 3d point in real world space
-imgpoints = [] # 2d points in image plane.
-images = glob.glob('left*.png')
+# # Arrays to store object points and image points from all the images.
+# objpoints = [] # 3d point in real world space
+# imgpoints = [] # 2d points in image plane.
+# images = glob.glob('left*.png')
 
-count = 0
+# count = 0
 
-for fname in images:
-    img = cv.imread(fname)
-    gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+# for fname in images:
+#     img = cv.imread(fname)
+#     gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 
-    # Find the chess board corners
-    ret, corners = cv.findChessboardCorners(gray, (9,7), None)
-    # If found, add object points, image points (after refining them)
+#     # Find the chess board corners
+#     ret, corners = cv.findChessboardCorners(gray, (9,7), None)
+#     # If found, add object points, image points (after refining them)
 
-    if ret == True:
+#     if ret == True:
 
-        count += 1
-        objpoints.append(objp)
-        corners2 = cv.cornerSubPix(gray,corners, (11,11), (-1,-1), criteria)
-        imgpoints.append(corners)
+#         count += 1
+#         objpoints.append(objp)
+#         corners2 = cv.cornerSubPix(gray,corners, (11,11), (-1,-1), criteria)
+#         imgpoints.append(corners)
 
-        # Draw and display the corners
-        cv.drawChessboardCorners(img, (9,7), corners2, ret)
-        cv.imshow('img', img)
-        cv.waitKey(3)
+#         # Draw and display the corners
+#         cv.drawChessboardCorners(img, (9,7), corners2, ret)
+#         cv.imshow('img', img)
+#         cv.waitKey(3)
 
-    if count >= 100: break
+#     if count >= 100: break
 
 
-cv.destroyAllWindows()
+# cv.destroyAllWindows()
 
-print("begin calibration")
+# print("begin calibration")
 
-ret, mtx, dist, rvecs, tvecs = cv.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
+# ret, mtx, dist, rvecs, tvecs = cv.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
 
-img = cv.imread('left12.png')
-h,  w = img.shape[:2]
-newcameramtx, roi = cv.getOptimalNewCameraMatrix(mtx, dist, (w,h), 1, (w,h))
+# img = cv.imread('left12.png')
+# h,  w = img.shape[:2]
+# newcameramtx, roi = cv.getOptimalNewCameraMatrix(mtx, dist, (w,h), 1, (w,h))
 
-print("finish left calibration")
-print("mtx =")
-print(mtx)
-print("dist =")
-print(dist)
-print("newcameramtx")
-print(newcameramtx)
+# print("finish left calibration")
+# print("mtx =")
+# print(mtx)
+# print("dist =")
+# print(dist)
+# print("newcameramtx")
+# print(newcameramtx)
 
-calibration = {
-    "mtx": mtx.tolist(),
-    "dist": dist.tolist(),
-    "newcameramtx": newcameramtx.tolist()
-}
+# calibration = {
+#     "mtx": mtx.tolist(),
+#     "dist": dist.tolist(),
+#     "newcameramtx": newcameramtx.tolist()
+# }
 
-with open("../left_calibrate.json", "w") as write_file:
-    json.dump(calibration, write_file, indent=4)
+# with open("../left_calibrate.json", "w") as write_file:
+#     json.dump(calibration, write_file, indent=4)
 
 
 
@@ -104,7 +104,7 @@ for fname in images:
 
 cv.destroyAllWindows()
 
-print("begin calibration")
+print("begin calibration of right camera")
 
 ret, mtx, dist, rvecs, tvecs = cv.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
 

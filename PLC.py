@@ -3,7 +3,7 @@ import config
 from time import sleep
 config.x = 0
 config.y = 0
-config.PORT = 'COM6'
+config.PORT = '/dev/ttyACM0'
 ser = None
 def setup():
     global ser
@@ -151,3 +151,11 @@ def short_y_negative():
     else:
         print("short_y- error")
         return False
+if __name__ == '__main__':
+    setup()
+    # for i in range(20):
+    #     short_y_positive()
+    #     short_y_negative()
+    # long_x_positive()
+    long_x_negative()
+    
