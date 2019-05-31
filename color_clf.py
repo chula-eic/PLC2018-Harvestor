@@ -7,9 +7,10 @@ from sklearn.linear_model import LogisticRegression as logistic
 import joblib
 
 import datetime
+import color
 
 
-color_liz = ['green', 'yellow', 'brown']
+color_liz = [color.green(), color.yellow(), color.brown()]
 
 def learn():
 
