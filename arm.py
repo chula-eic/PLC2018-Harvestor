@@ -57,6 +57,22 @@ def backward():
     else:
         print('Going backward, error')
         return False
+def open():
+    print('Opening Catcher')
+    if(serial_write("OPEN_CATCHER") == 'SUCCESS'):
+        print('Open Catcher, success')
+        return True
+    else:
+        print('Open Catcher, error')
+        return False
+def close():
+    print('Closing Catcher')
+    if(serial_write("CLOSE_CATCHER") == 'SUCCESS'):
+        print('Close Catcher, success')
+        return True
+    else:
+        print('Close Catcher, error')
+        return False
 def stop():
     print('Stopping')
     if(serial_write("STOP") == 'SUCCESS'):

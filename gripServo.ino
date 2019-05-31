@@ -1,6 +1,8 @@
 #include <Servo.h> 
-Servo grip;
-int servoPort = 3;
+Servo grip, catcher1,catcher2;
+int servoGripPort = 3;
+int servoCatcher1 = 9;
+int servoCatcher2 = 10;
 int motorA = 5;
 int motorB = 6;
 int V5 = 8; //5v replacement
@@ -23,7 +25,9 @@ void setup() {
   analogWrite(motorA,0);
   analogWrite(motorB,0);
   Serial.begin(115200);
-  grip.attach(servoPort);
+  grip.attach(servoGripPort);
+  catcher1.attach(servoCatcher1);
+  catcher2.attach(servoCatcher2);
   Serial.println("SETUP DONE");
 }
 void doServoAction(String cmd){
@@ -58,6 +62,18 @@ void doServoAction(String cmd){
     FW = false;
     BW = true;
   }
+  else if(cmd == "CLOSE_CATCHER"){
+    Serial.println("Closing the catcher");
+    catcher1.write(0);
+    catcher2.write(0);
+    Serial.println("DONE");
+  }
+  else if(cmd == "OPEN_CATCHER"){
+    Serial.println("Opening the catcher");
+    catcher1.write(180);
+    catcher2.write(180);
+    Serial.println("DONE");
+  }
   else{
     Serial.println("INPUT NOT RECOGNIZED: " + cmd + ". PLEASE TRY AGAIN");
   }
@@ -75,7 +91,9 @@ void loop() {
 }
 
 //B-W   black-gnd white-3.7V 2A
-//B-W-G black-gnd white-5V arduino  green-data@servoPort
+//B-W-G black-gnd white-5V arduino  green-data@servoGripPort
 //The servo response only over/under a threshold, 0 to grip and 180 to release seems to work
 //armMotor driven as 12V DC Motor, tested with motor drive
 //Limit Switch Board sequence +FB- hole on the right, top view
+
+//Catcher have not tested together yet, but one of them works for sure.
