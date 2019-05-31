@@ -13,6 +13,8 @@ def setup():
 def serial_write(s):
     t = s
     global ser
+    if ser is None:
+        return "Error"
     ser.write(s.encode('utf-8'))
     return serial_read(t)
 def grab():

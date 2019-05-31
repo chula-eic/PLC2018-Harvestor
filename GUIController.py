@@ -79,35 +79,35 @@ class MainApplication(tk.Frame):
         self.stopButton.grid(row=3, column=0, columnspan=2)
 
     def create_right_frame_buttons(self):
-        self.button5 = tk.Button(self.right_frame, text='X-300',activeforeground='red')
+        self.button5 = tk.Button(self.right_frame, text='X-300',activeforeground='red',command=PLC.long_x_negative)
         self.button5.config( height = 5, width = 10) 
         self.button5.grid(row=0, column=0, padx=5, pady=10)
 
-        self.button6 = tk.Button(self.right_frame, text='X-50',activeforeground='red')       
+        self.button6 = tk.Button(self.right_frame, text='X-50',activeforeground='red',command=PLC.short_x_negative)       
         self.button6.config( height = 5, width = 10 )
         self.button6.grid(row=0, column=1, padx=5, pady=10)
 
-        self.button7 = tk.Button(self.right_frame, text='Y-200',activeforeground='red')       
+        self.button7 = tk.Button(self.right_frame, text='Y-200',activeforeground='red',command=PLC.long_y_negative)       
         self.button7.config( height = 5, width = 10 )
         self.button7.grid(row=1, column=0, padx=5, pady=10)
 
-        self.button8 = tk.Button(self.right_frame, text='Y-50',activeforeground='red')       
+        self.button8 = tk.Button(self.right_frame, text='Y-50',activeforeground='red',command=PLC.short_y_negative)       
         self.button8.config( height = 5, width = 10 )
         self.button8.grid(row=1, column=1, padx=5, pady=10)
 
-        self.button11 = tk.Button(self.right_frame, text='Gripper\ncut',activeforeground='blue')       
+        self.button11 = tk.Button(self.right_frame, text='Gripper\ncut',activeforeground='blue',command=arm.cut)       
         self.button11.config( height = 5, width = 10 )
         self.button11.grid(row=2, column=0, padx=5, pady=10)
 
-        self.button12 = tk.Button(self.right_frame, text='Gripper\nRelease',activeforeground='blue')       
+        self.button12 = tk.Button(self.right_frame, text='Gripper\nRelease',activeforeground='blue',command=arm.release)       
         self.button12.config( height = 5, width = 10 )
         self.button12.grid(row=2, column=1, padx=5, pady=10)
         
-        self.button13 = tk.Button(self.right_frame, text='Arm Forward',activeforeground='purple')       
+        self.button13 = tk.Button(self.right_frame, text='Arm Forward',activeforeground='purple',command=arm.forward)       
         self.button13.config( height = 5, width = 10 )
         self.button13.grid(row=3, column=0, padx=5, pady=10)
 
-        self.button14 = tk.Button(self.right_frame, text='Arm Backward',activeforeground='purple')       
+        self.button14 = tk.Button(self.right_frame, text='Arm Backward',activeforeground='purple',command=arm.backward)       
         self.button14.config( height = 5, width = 10 )
         self.button14.grid(row=3, column=1, padx=5, pady=10)
 

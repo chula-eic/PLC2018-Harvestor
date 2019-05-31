@@ -14,8 +14,8 @@ def serial_write(s):
     t = s
     global ser
     if ser is None:
-        return "ERROR"
-    ser.write(s.encode('utf-8')
+        return "Error"
+    ser.write(s.encode('utf-8'))
     return serial_read(t)
 
 def serial_read(cmd=""):
@@ -162,7 +162,7 @@ def stop():
     else:
         print('Stop unsuccessful')
         return False
-
+        
 if __name__ == '__main__':
     pass
     #setup()
