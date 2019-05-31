@@ -13,7 +13,9 @@ def setup():
 def serial_write(s):
     t = s
     global ser
-    ser.write(s.encode('utf-8'))
+    if ser is None:
+        return "ERROR"
+    ser.write(s.encode('utf-8')
     return serial_read(t)
 
 def serial_read(cmd=""):
@@ -151,11 +153,22 @@ def short_y_negative():
     else:
         print("short_y- error")
         return False
+
+def stop():
+    print("Stopping")
+    if(serial_write("0") == 'SUCCESS'):
+        print('Stop success')
+        return True
+    else:
+        print('Stop unsuccessful')
+        return False
+
 if __name__ == '__main__':
-    setup()
+    pass
+    #setup()
     # for i in range(20):
     #     short_y_positive()
     #     short_y_negative()
     # long_x_positive()
-    long_x_negative()
+    #long_x_negative()
     
