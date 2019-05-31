@@ -6,6 +6,7 @@
 	- Darknet
 	- Yolo V3
 	- docker-nvidia
+	
 **Installation Instructions:**
 	- Install requirements for python modules by using pip/pip3 install --> serial, numpy, pythoncv, sklearn
 	- Install CUDA 9 for GPU acceleration (not necessary)
