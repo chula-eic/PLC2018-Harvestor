@@ -5,6 +5,7 @@ import arm
 #import main2
 #import vision
 import os
+import webbrowser
 
 class HoverButton(tk.Button):
     def __init__(self, master, **kw):
@@ -28,7 +29,7 @@ class MainApplication(tk.Frame):
 
     def configure_gui(self):
         self.master.title('PLC Controller')
-        self.master.geometry('500x500')
+        self.master.geometry('420x500')
         self.master.resizable(0, 0)
 
     def create_widgets(self):
@@ -36,11 +37,11 @@ class MainApplication(tk.Frame):
         self.create_buttons()
 
     def create_frames(self):
-        self.left_frame = tk.Frame(width=250, height=500, background='skyblue')
+        self.left_frame = tk.Frame(width=210, height=500, background='skyblue')
         self.left_frame.grid_propagate(0)
         self.left_frame.grid(row=0, column=0)
 
-        self.right_frame = tk.Frame(width=250, height=500, background='pink')
+        self.right_frame = tk.Frame(width=210, height=500, background='pink')
         self.right_frame.grid_propagate(0)
         self.right_frame.grid(row=0, column=1)
 
@@ -74,9 +75,17 @@ class MainApplication(tk.Frame):
         self.button10.config( height = 5, width = 10 )
         self.button10.grid(row=2, column=1, padx=5, pady=10)  
 
+        self.button15 = tk.Button(self.left_frame, text='Open\nCatcher',activeforeground='orange',command=arm.open)       
+        self.button15.config( height = 5, width = 10 )
+        self.button15.grid(row=3, column=0, padx=5, pady=10) 
+
+        self.button16 = tk.Button(self.left_frame, text='Close\nCatcher',activeforeground='yellow',command=arm.close)       
+        self.button16.config( height = 5, width = 10 )
+        self.button16.grid(row=3, column=1, padx=5, pady=10) 
+
         self.stopButton = tk.Button(self.left_frame, text="STOP",activeforeground='red',command=PLC.stop)
         self.stopButton.config( height=5, width=20)
-        self.stopButton.grid(row=3, column=0, columnspan=2)
+        self.stopButton.grid(row=4, column=0, columnspan=2)
 
     def create_right_frame_buttons(self):
         self.button5 = tk.Button(self.right_frame, text='X-300',activeforeground='red',command=PLC.long_x_negative)
@@ -110,6 +119,10 @@ class MainApplication(tk.Frame):
         self.button14 = tk.Button(self.right_frame, text='Arm Backward',activeforeground='purple',command=arm.backward)       
         self.button14.config( height = 5, width = 10 )
         self.button14.grid(row=3, column=1, padx=5, pady=10)
+
+        self.button17 = tk.Button(self.right_frame, text='',activeforeground='purple',command=arm.backward)       
+        self.button17.config( height = 5, width = 10 )
+        self.button17.grid(row=4, column=1, padx=5, pady=10)
 
 def run_main():
     os.system('python3 main.py')
