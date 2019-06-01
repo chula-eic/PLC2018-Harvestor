@@ -1,5 +1,5 @@
 import tkinter as tk
-import PLC
+import PLCg
 import arm
 #import main
 #import main2
