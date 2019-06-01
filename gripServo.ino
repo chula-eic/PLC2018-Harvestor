@@ -62,13 +62,13 @@ void doServoAction(String cmd){
     FW = false;
     BW = true;
   }
-  else if(cmd == "CLOSE_CATCHER"){
+  else if(cmd == "CLOSE"){
     Serial.println("Closing the catcher");
-    catcher1.write(0);
-    catcher2.write(0);
+    catcher1.write(90);
+    catcher2.write(90);
     Serial.println("DONE");
   }
-  else if(cmd == "OPEN_CATCHER"){
+  else if(cmd == "OPEN"){
     Serial.println("Opening the catcher");
     catcher1.write(180);
     catcher2.write(180);

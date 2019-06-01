@@ -6,6 +6,8 @@ import arm
 #import vision
 import os
 import webbrowser
+from PIL import Image, ImageTk
+
 
 class HoverButton(tk.Button):
     def __init__(self, master, **kw):
@@ -29,7 +31,11 @@ class MainApplication(tk.Frame):
 
     def configure_gui(self):
         self.master.title('PLC Controller')
+<<<<<<< HEAD
         self.master.geometry('600x600')
+=======
+        self.master.geometry('420x520')
+>>>>>>> f91c6fe9fb711616aa4b63485070c99e8d3c904c
         self.master.resizable(0, 0)
 
     def create_widgets(self):
@@ -37,11 +43,19 @@ class MainApplication(tk.Frame):
         self.create_buttons()
 
     def create_frames(self):
+<<<<<<< HEAD
         self.left_frame = tk.Frame(width=300, height=600, background='skyblue')
         self.left_frame.grid_propagate(0)
         self.left_frame.grid(row=0, column=0)
 
         self.right_frame = tk.Frame(width=300, height=600, background='pink')
+=======
+        self.left_frame = tk.Frame(width=210, height=520, background='skyblue')
+        self.left_frame.grid_propagate(0)
+        self.left_frame.grid(row=0, column=0)
+
+        self.right_frame = tk.Frame(width=210, height=520, background='pink')
+>>>>>>> f91c6fe9fb711616aa4b63485070c99e8d3c904c
         self.right_frame.grid_propagate(0)
         self.right_frame.grid(row=0, column=1)
 
@@ -119,8 +133,9 @@ class MainApplication(tk.Frame):
         self.button14 = tk.Button(self.right_frame, text='Arm Backward',activeforeground='purple',command=arm.backward)       
         self.button14.config( height = 5, width = 10 )
         self.button14.grid(row=3, column=1, padx=5, pady=10)
-
-        self.button17 = tk.Button(self.right_frame, text='',activeforeground='purple',command=arm.backward)       
+        c = tk.Canvas()
+        img = ImageTk.PhotoImage(Image.open('/Users/daidew/Downloads/eic.jpg'))
+        self.button17 = tk.Button(self.right_frame ,activeforeground='purple',command=run_eic,image=img)       
         self.button17.config( height = 5, width = 10 )
         self.button17.grid(row=4, column=1, padx=5, pady=10)
 
@@ -129,7 +144,9 @@ def run_main():
 
 def run_main2():
     os.system('python3 main2.py')
-
+def run_eic():
+    print('open web')
+    webbrowser.open_new("https://www.facebook.com/eicchulalongkorn/")
 if __name__ == '__main__':
     root = tk.Tk()
     main_app =  MainApplication(root)
