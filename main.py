@@ -17,10 +17,10 @@ basket = {}
 
 with open("mainConfig.json", "r") as config_file:
     config = json.load(config_file)
-    x_yellow = config['x_yellow']
-    y_yellow = config['y_yellow']
-    x_brown = config['x_brown']
-    y_brown = config['y_brown']
+    x_yellow = 100
+    y_yellow = 0
+    x_brown = 200
+    y_brown = 0
     x_min = config['x_min']
     x_max = config['x_max']
     x_long = config['x_long']
@@ -137,8 +137,8 @@ def go_to(x_start, y_start, x_final, y_final):
     return [x, y]
 
 def approx_position(mango, x, y):
-    approx_x = x + mango[3][0]
-    approx_y = 
+    approx_x = x + mango[3][0] * (mango[3][2]) + 30
+    approx_y = y + mango[3][1] * (mango[3][3]) + 75
     return [approx_x, approx_y]
 
 def most_left(mangos, x, y):
@@ -154,7 +154,9 @@ def most_left(mangos, x, y):
 def get_color(image, clf):
     return cclf.get_color(image, clf)
 
-print("HARVEST")
+print('READY TO HARVEST')
+input('PRESS ENTER TO START')
+print("START HARVESTING")
 
 x = x_min
 dir_x = 1

@@ -2,14 +2,18 @@ import serial
 import config
 from time import sleep
 config.isCutting,config.isReleasing,config.isGrabbing = False,False,False
-config.PORT = 'COM6'
+config.PORT = '/dev/ttyACM0'
 ser = None
 def setup():
     global ser
     ser = serial.Serial(config.PORT, 115200, timeout=1)
     st = serial_read()
+    if(st[-1] == '\n'):
+         st = st[:-1]
+    
     while(not st == "SETUP DONE"):
         st=serial_read()
+    print("*" + st)
 def serial_write(s):
     t = s
     global ser
@@ -153,8 +157,8 @@ def serial_read(cmd=""):
             setToDefault()
             return rl
 
-#if __name__ == '__main__':
-#        setup()
+if __name__ == '__main__':
+        setup()
 #        while(1):
 #            forward()
 #            sleep(2)

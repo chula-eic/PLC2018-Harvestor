@@ -28,21 +28,21 @@ void setup() {
   grip.attach(servoGripPort);
   catcher1.attach(servoCatcher1);
   catcher2.attach(servoCatcher2);
-  Serial.println("SETUP DONE");
+  Serial.print("SETUP DONE");
 }
 void doServoAction(String cmd){
   if(cmd == "RELEASE"){
-    Serial.println("RELEASING");
+    Serial.print("RELEASING");
     grip.write(180);
-    Serial.println("DONE");
+    Serial.print("DONE");
   }
   else if(cmd == "CUT"){
-    Serial.println("CUTTING");
+    Serial.print("CUTTING");
     grip.write(0);
-    Serial.println("DONE");
+    Serial.print("DONE");
   }
   else if (cmd == "FORWARD") {
-    Serial.println("Going Forward");
+    Serial.print("Going Forward");
     analogWrite(motorA,motorPower);
     analogWrite(motorB,0);
     FW = true;
@@ -51,31 +51,31 @@ void doServoAction(String cmd){
   else if (cmd == "STOP") {
     analogWrite(motorA,0);
     analogWrite(motorB,0);
-    Serial.println("Stopped");
+    Serial.print("Stopped");
     FW = false;
     BW = false;
   }
   else if (cmd == "BACKWARD") {
-    Serial.println("Going Backward");
+    Serial.print("Going Backward");
     analogWrite(motorA,0);
     analogWrite(motorB,motorPower);
     FW = false;
     BW = true;
   }
   else if(cmd == "CLOSE"){
-    Serial.println("Closing the catcher");
+    Serial.print("Closing the catcher");
     catcher1.write(90);
     catcher2.write(90);
-    Serial.println("DONE");
+    Serial.print("DONE");
   }
   else if(cmd == "OPEN"){
-    Serial.println("Opening the catcher");
+    Serial.print("Opening the catcher");
     catcher1.write(180);
-    catcher2.write(180);
-    Serial.println("DONE");
+    catcher2.write(0);
+    Serial.print("DONE");
   }
   else{
-    Serial.println("INPUT NOT RECOGNIZED: " + cmd + ". PLEASE TRY AGAIN");
+    Serial.print("INPUT NOT RECOGNIZED: " + cmd + ". PLEASE TRY AGAIN");
   }
 }
 
@@ -83,11 +83,11 @@ void loop() {
   if(Serial.available()){
     cmd = Serial.readString();
     //if operated manually, use Serial.readStringUntil('\n') instead.
-    Serial.println("SERIAL INPUT RECIEVED: " + cmd);
+    Serial.print("SERIAL INPUT RECIEVED: " + cmd);
     doServoAction(cmd);
   }
-  //Serial.println(String(digitalRead(frntLimPin))+" "+String(digitalRead(backLimPin)));
-  if ((FW && digitalRead(frntLimPin)==1)||(BW && digitalRead(backLimPin)==1)) {Serial.println("Limit Reached. Forcing STOP Command");doServoAction("STOP");}
+  //Serial.print(String(digitalRead(frntLimPin))+" "+String(digitalRead(backLimPin)));
+  if ((FW && digitalRead(frntLimPin)==1)||(BW && digitalRead(backLimPin)==1)) {Serial.print("Limit Reached. Forcing STOP Command");doServoAction("STOP");}
 }
 
 //B-W   black-gnd white-3.7V 2A
