@@ -10,7 +10,7 @@ import datetime
 import color
 
 
-color_liz = [color.green(), color.yellow(), color.brown()]
+color_liz = ['green', 'yellow', 'brown']
 
 def learn():
 

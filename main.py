@@ -42,6 +42,9 @@ print("SETUP VISION")
 net = vision.load()
 vcap = cv2.VideoCapture(1)
 
+print("SETUP COLOR CLASSIFIER")
+clf = cclf.load()
+
 def get_frames(vcap):
 
     ret, images = vcap.read()
@@ -134,14 +137,8 @@ def go_to(x_start, y_start, x_final, y_final):
     return [x, y]
 
 def approx_position(mango, x, y):
-    real_mango_width = 60
-    real_mango_height = 150
-    mango_width = 0
-    mango_heigth = 0
-    x_mango = 0
-    y_mango = 0
-    approx_x = (x + x_mango + mango_width/2) * mango_width / real_mango_width
-    approx_y = (y + y_mango + mango_heigth/2) * mango_heigth / real_mango_height
+    approx_x = x + mango[3][0]
+    approx_y = 
     return [approx_x, approx_y]
 
 def most_left(mangos, x, y):
@@ -150,12 +147,11 @@ def most_left(mangos, x, y):
     for mango in mangos:
         ml_x, ml_y = approx_position(most_left_mango, x, y)
         x_mango, y_mango = approx_position(mango, x, y)
-        if x_mango + x_error > x and x_mango <= ml_x:
+        if x_mango + x_error > x and x_mango <= ml_x and mango[2]:
             most_left_mango = mango
     return most_left_mango
 
-def get_color(image):
-    clf = cclf.load()
+def get_color(image, clf):
     return cclf.get_color(image, clf)
 
 print("HARVEST")

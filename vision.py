@@ -6,12 +6,13 @@ from pydarknet import Detector, Image
 import cv2
 import os
 import time
-import test_color as tc
+import color_clf as cc
 def load(filename = 'yolov3.weights'):
     dir=""
     return Detector(bytes(dir+"yolo/yolov3.cfg", encoding="utf-8"), bytes(dir+"yolo/"+filename, encoding="utf-8"), 0, bytes(dir+"yolo/coco.data", encoding="utf-8"))
 
 def detect(frame, net):
+    clf = cc.load()
     mul = 1
     if mul != 1:
         framez = cv2.resize(frame,(0,0), fx=1/mul, fy=1/mul)
@@ -29,7 +30,7 @@ def detect(frame, net):
         x, y, w, h = bounds
         cv2.rectangle(framez, (int(x-w/2),int(y-h/2)),(int(x+w/2),int(y+h/2)),(255,0,0))
         cropped_image.append(framez[int(x-w/2):int(x+w/2),int(y-h/2):int(y+h/2)])
-        color = tc.get_color(cropped_image[-1])
+        color = cc.get_color(cropped_image[-1], clf)
         cv2.putText(framez, str(cat.decode("utf-8")), (int(x), int(y)), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 0))
         results.append(
             (
