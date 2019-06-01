@@ -29,7 +29,7 @@ class MainApplication(tk.Frame):
 
     def configure_gui(self):
         self.master.title('PLC Controller')
-        self.master.geometry('420x500')
+        self.master.geometry('600x600')
         self.master.resizable(0, 0)
 
     def create_widgets(self):
@@ -37,11 +37,11 @@ class MainApplication(tk.Frame):
         self.create_buttons()
 
     def create_frames(self):
-        self.left_frame = tk.Frame(width=210, height=500, background='skyblue')
+        self.left_frame = tk.Frame(width=300, height=600, background='skyblue')
         self.left_frame.grid_propagate(0)
         self.left_frame.grid(row=0, column=0)
 
-        self.right_frame = tk.Frame(width=210, height=500, background='pink')
+        self.right_frame = tk.Frame(width=300, height=600, background='pink')
         self.right_frame.grid_propagate(0)
         self.right_frame.grid(row=0, column=1)
 
